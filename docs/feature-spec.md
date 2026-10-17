@@ -1,4 +1,4 @@
-> **Specification navigation (2026-10-17):** This file is retained as the consolidated feature backlog. The phase-specific, review-ready specifications now live at [docs/phases/README.md](phases/README.md), with [Phase 1](phases/phase-01-foundation.md), [Phase 2](phases/phase-02-context-workflows.md), and [Phase 3](phases/phase-03-evaluation-learning.md). Portable Task Context v0 is moved into Phase 1; full Context Engine and Cross-provider Handoff remain Phase 2. **Use phase documents as the current scope for Codex grill-with-docs; do not implement before review.**
+> **Specification navigation (2026-10-17):** Historical consolidated backlog. Phase 1 discussion Q1–Q34 and documentation approval are complete; the revised [Phase 1 specification](phases/phase-01-foundation.md), [acceptance contract](phases/phase-01-acceptance.md) and [decision/risk record](phases/phase-01-review.md) govern Phase 1 scope. The original MVP scenarios and routing modes below remain historical. Phase 2/3 are not yet reviewed. Documentation approval does not authorize implementation or live provider executions.
 
 # Puen Harness — Feature Specification v0.1
 
