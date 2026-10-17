@@ -4,6 +4,8 @@
 
 ขอบเขตนี้คือ preparation ของ [PH1-001](phase-01-work-items.md) ภายใต้ [preflight และ approval gates](phase-01-feasibility-preflight.md) เท่านั้น ไม่ใช่การปิด spike, สร้าง adapter หรือรับรอง provider ผล native ของ T01, T02, T06, T07 ยัง **not tested** ทั้งหมด อ่านร่วมกับ [approved specification](../phases/phase-01-foundation.md), [acceptance](../phases/phase-01-acceptance.md), [Q1–Q34](../phases/phase-01-review.md) และ [risk register](phase-01-risks.md)
 
+การมอบหมาย PH1-001 ภายใต้ PR workflow วันที่ 2026-10-18 มี [authorization record, observed environment และ bounded execution proposal](ph1-001-authorization-and-proposal.md) เพิ่มเติม ยังไม่ได้อนุมัติการเริ่ม Codex CLI, spike code หรือ live tests
+
 ## หลักฐานที่มี
 
 ตรวจเอกสาร official เมื่อ 2026-10-17; ยังไม่เรียก binary แม้แต่ version/help, ไม่ตรวจบัญชีหรือ credentials และไม่ทราบ installed version ข้อมูลเว็บไซต์อาจใหม่กว่า binary ที่จะใช้ ต้องตรวจ schema/flags ของ exact version หลังอนุมัติอีกครั้ง
