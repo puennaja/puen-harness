@@ -1,0 +1,61 @@
+name: PR Review Preflight (no AI API)
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, ready_for_review, reopened]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: pr-preflight-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check PR delivery contract
+        env:
+          PR_DRAFT: ${{ github.event.pull_request.draft }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_HEAD: ${{ github.event.pull_request.head.ref }}
+          PR_BASE: ${{ github.event.pull_request.base.ref }}
+        run: |
+          python3 - <<'PY'
+          import os, re, sys
+          draft = os.getenv("PR_DRAFT") == "true"
+          title = os.getenv("PR_TITLE", "")
+          body = os.getenv("PR_BODY", "")
+          head = os.getenv("PR_HEAD", "")
+          base = os.getenv("PR_BASE", "")
+          errors = []
+          if base != "master":
+              errors.append("PR must target master.")
+          if not re.fullmatch(r"(feature|fix|chore|docs)/[A-Za-z0-9][A-Za-z0-9._-]*", head):
+              errors.append("Branch must use feature/, fix/, chore/ or docs/ naming.")
+          if not title.strip():
+              errors.append("PR title is required.")
+          if not draft:
+              for section, pattern in [
+                  ("scope", r"(?i)(scope|summary|ขอบเขต|สรุป)"),
+                  ("test evidence", r"(?i)(tests?|evidence|verification|ผลตรวจ|ทดสอบ|หลักฐาน)"),
+                  ("risks/limitations", r"(?i)(risk|limitation|blocker|ความเสี่ยง|ข้อจำกัด)"),
+                  ("human decision", r"(?i)(human|approval|decision|อนุมัติ|ตัดสินใจ)"),
+              ]:
+                  if not re.search(pattern, body):
+                      errors.append(f"Ready PR missing section/topic: {section}")
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as f:
+              f.write("## Deterministic PR preflight\n\n")
+              f.write("No model inference or paid AI API is invoked.\n\n")
+              f.write("Draft PR: " + str(draft) + "\n\n")
+              f.write("Findings: " + ("; ".join(errors) if errors else "none") + "\n\n")
+              f.write("This check is not a code review, an AI review, or human approval.\n")
+          for err in errors:
+              print("::error::" + err)
+          if errors:
+              sys.exit(1)
+          PY
