@@ -2,6 +2,8 @@
 
 สถานะ: **เตรียมเอกสารแล้ว / native tests NOT RUN / transport ยังไม่เลือก** — 2026-10-18
 
+อัปเดต P0-CX รอบถัดมาในวันเดียวกัน: ผู้ใช้อนุมัติ local help/version inventory รวม Ubuntu 26.04 exploratory และ documentation delivery แล้ว; [static inventory และ startup blocker](ph1-001-codex-local-inventory.md) บันทึก package metadata `0.162.1` และเหตุผลที่หยุดก่อน CLI ทั้งสี่คำสั่ง (0/4 invocations) ข้อความ “ยังไม่ได้อนุมัติ” ด้านล่างเป็นประวัติ preparation รอบก่อน ไม่ใช่สถานะสิทธิ์ P0-CX ล่าสุด ส่วน spike code/live execution ยังไม่ได้รับอนุญาต
+
 ขอบเขตนี้คือ preparation ของ [PH1-001](phase-01-work-items.md) ภายใต้ [preflight และ approval gates](phase-01-feasibility-preflight.md) เท่านั้น ไม่ใช่การปิด spike, สร้าง adapter หรือรับรอง provider ผล native ของ T01, T02, T06, T07 ยัง **not tested** ทั้งหมด อ่านร่วมกับ [approved specification](../phases/phase-01-foundation.md), [acceptance](../phases/phase-01-acceptance.md), [Q1–Q34](../phases/phase-01-review.md) และ [risk register](phase-01-risks.md)
 
 การมอบหมาย PH1-001 ภายใต้ PR workflow วันที่ 2026-10-18 มี [authorization record, observed environment และ bounded execution proposal](ph1-001-authorization-and-proposal.md) เพิ่มเติม ยังไม่ได้อนุมัติการเริ่ม Codex CLI, spike code หรือ live tests

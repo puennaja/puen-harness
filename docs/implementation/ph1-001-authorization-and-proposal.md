@@ -2,6 +2,8 @@
 
 วันที่ 2026-10-18 — **เอกสารสำหรับ Draft PR / native feasibility BLOCKED / ยังไม่ปิด Work Item**
 
+บันทึกรอบถัดมาในวันเดียวกัน: ผู้ใช้อนุมัติ P0-CX help/version 4 commands บน current host รวม Ubuntu 26.04 exploratory พร้อม commit/push/Draft PR ของ branch ใหม่แล้ว ดู [authorization และผล static inventory ล่าสุด](ph1-001-codex-local-inventory.md) ซึ่งหยุดก่อน invocation ตาม startup blocker (0/4) Authorization ledger และคำถาม P0 ด้านล่างเก็บเป็นประวัติรอบ proposal เดิม ไม่ได้ยกเลิกสิทธิ์ล่าสุด และยังไม่อนุญาต CODE-CX/LIVE-CX
+
 ปัญหาที่ต้องตรวจคือ Codex App Server หรือ exec JSON สามารถรักษา fixed Run envelope ตาม Phase 1 ได้จริงหรือไม่ งานที่อนุญาตในรอบนี้ทำให้ขอบเขตและการทดลองถัดไปตรวจทานได้ก่อนเริ่ม process หรือใช้บัญชี provider ไม่เลือก transport จากเอกสารเพียงอย่างเดียว
 
 ## Scope และแหล่งข้อกำหนด
