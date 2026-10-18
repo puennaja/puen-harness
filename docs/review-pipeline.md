@@ -1,40 +1,45 @@
-# Puen Harness — PR Review Pipeline v0 (pilot)
+# Puen Harness — PR Review Pipeline v0.2 (subscription-first)
 
-Status: proposed on feature branch. No production runtime changes; no merge authorization.
+Status: proposal on Draft PR. No deployment, provider inference, or extra AI API.
 
-## Goal
-Codex develops on a feature branch, pushes and opens a Draft PR. When the author marks it Ready for Review (or subsequently pushes updates), GitHub Actions performs read-only independent AI review, posts an advisory PR comment, and the human gate owner decides whether to approve/merge.
+## Goal and flow
+1. Codex creates scoped feature branch, implements only approved scope, runs permitted tests, pushes and opens Draft PR to `master`.
+2. GitHub Actions runs deterministic PR preflight, including branch/base convention and required information when Ready for Review.
+3. User asks Wit in ChatGPT to review the GitHub PR, or uses the existing optional hourly watch when enabled. Wit reads the actual diff and test evidence using the GitHub connection, writes a **COMMENT** review with findings, and marks Ready for Review only when no blocker remains.
+4. Codex addresses requested changes on the same branch within authorized scope and pushes. A new head SHA requires review again.
+5. **Only the user** decides whether to merge. AI does not merge or grant a formal GitHub approval.
 
-## Current design
-- Uses the official `openai/codex-action@v1` with `:read-only` permission profile. This is **a new AI reviewer instance, not the ChatGPT conversation named Wit**.
-- Runs only on non-draft, same-repository PRs authored by `puennaja`. Fork PRs are excluded to reduce untrusted-code/secret exposure.
-- Workflow has read-only repository token during model review; a separate job receives narrowly scoped PR-comment permission.
-- AI does not approve, edit, execute tests, or merge; it reviews source/diff and existing test evidence.
-- No review triggers while Draft. Mark Ready for Review to start. Pushing after that retriggers; outputs may produce multiple comments. Concurrent runs for the same PR are canceled when superseded.
-- Human approval is **not automatically enforced by this workflow**. Configure GitHub branch protection/rulesets separately; verify restrictions apply to admins/owner under actual plan.
+## What is automatic and what is not
+- **Automatic:** GitHub Actions PR metadata/contract check, on opened/edited/synchronize/ready_for_review/reopened. Draft PRs can omit detailed body sections until ready.
+- **Manual or scheduled ChatGPT:** Semantic/architecture/code/security review. It is **not** invoked by GitHub Actions; no API or subscription bridge is assumed.
+- **Human:** approval and merge decision. A PR author may be unable to submit a GitHub approving review for their own PR; use manual merge decision in that case. GitHub branch protection's required external approving review needs another authorized GitHub reviewer account. Do not claim this workflow enforces owner-only human approval.
 
-## Setup required by human
-1. Review and merge this setup PR (first activation is bootstrapping).
-2. Create an OpenAI API key with a limited budget, and set it as repository **Actions secret** `OPENAI_API_KEY` under Settings → Secrets and variables → Actions. Do not commit or paste credentials.
-3. Configure branch protection for `master`: require pull requests and desired human approving review/checks; prevent bypass if available. A bot PR comment does **not** count as a human approval.
-4. Open a small test Draft PR, mark Ready for Review, confirm AI comment and workflow timing/spend; inspect unexpected/duplicate runs. Review failures should be visible, never treated as approval.
-5. Set model and pinned action SHAs after first validated version/price choice, before treating as a strong release control. Current `@v1` and other tags are moving tags and are **not supply-chain pinned**.
+## Costs
+- **No OpenAI/Anthropic API calls, API key, secrets, or inferred subscription usage.**
+- Uses standard GitHub-hosted Actions. GitHub Actions minutes/quotas and any overages depend on repository visibility and GitHub plan; this is not guaranteed zero infrastructure cost.
+- ChatGPT review is conducted through the existing conversation/connection, within applicable product usage limits. It is not continuous or real-time unless the user enables a separate scheduled check.
 
-## Budget and risks
-- GitHub Actions review uses **OpenAI API billing**, separately from ChatGPT Plus/Codex subscriptions. The operator must control API key budget and review triggers; no guarantee of strict per-run monetary ceiling.
-- Public PRs and repo files are potentially attacker-controlled prompts; reviewer must not act on embedded instructions. Constraining authors alone does not mean contents are trusted.
-- `pull_request` runs with a secret only for same-repository trusted-author PRs; avoid `pull_request_target` with untrusted checkout. Checkout has `persist-credentials: false`.
-- Review never runs tests or code by instruction; checkout/action setup executes trusted GitHub Actions code. Auditing/pinning third-party action dependencies remains necessary.
-- Only a human should determine acceptance; AI review is advisory and may miss defects or make unsupported claims.
-- The manually configured GitHub branch protection must be validated. This PR does not install or claim owner-only gate enforcement.
-- Initial automated reviewer is Codex, not Claude. Cross-model review remains a future replaceable adapter; do not confuse this with Puen Harness's coding-provider adapters.
+## Permissions and security
+- Workflow has only `contents: read` and `pull-requests: read`. It does not check out or execute PR-controlled repository code.
+- The workflow reads PR title/body/branch from event data as plain text. It does not interpolate these values into shell source code; they are passed as environment values.
+- The job does not approve, post PR comments, write files, or merge.
+- Check verifies only presence of topics (not their truth). Passing it must never be interpreted as correctness, comprehensive coverage, test success or AI approval.
+- Pin exact action commit SHAs before adding third-party actions; the initial workflow uses no external actions.
+- Repo owner configures appropriate branch rulesets/branch protection separately and confirms they work with account/repository plan and any admin bypass.
 
-## Review coverage
-Review current diff against Phase 1 approved requirements, security boundaries, task/run/session lifecycle, context authority, provenance, failure handling, tests and regression risk.
+## Human review policy
+- Compare PR head SHA with reviewed SHA. If head changes, previous findings may be stale; re-review before declaring Ready.
+- Report findings as BLOCKER/MAJOR/MINOR with path, reason and next steps. Explicitly distinguish tests run from tests planned/not run.
+- Only remove Draft after reading actual changed files and recording a review comment. A passing metadata preflight alone is not enough.
+- Keep Human Gate for merge and for any provider execution/credentials/billing/expanded implementation permission.
 
-## Initial smoke acceptance
-- Draft PR creates **no** AI review.
-- Ready for Review PR authored by `puennaja` triggers AI review if API secret exists.
-- Missing secret produces explicit workflow failure and no success comment.
-- New commit to ready PR retriggers and labels head SHA; prior comments do not approve the newest commit.
-- Reviewer cannot modify repo or post an approval/merge; human retains final responsibility.
+## Smoke test after merge
+1. New Draft PR targeting master: preflight passes without section requirements.
+2. Invalid branch/base: preflight fails.
+3. Ready PR with absent scope/evidence/risks/human-decision topics: preflight fails.
+4. Complete PR description: preflight passes (does **not** imply code quality).
+5. Confirm there are no API secrets, AI actions, inferred costs, or automated merge steps.
+6. Verify branch protection/manual merge constraints independently and record actual test outcomes.
+
+## Not in v0.2
+- An autonomous AI GitHub review bot, subscription credential sharing with CI, self-hosted runner on personal machines, automatic Codex repair loop, semantic code review in Actions, or auto-merge.
